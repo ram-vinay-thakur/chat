@@ -1,6 +1,8 @@
+import userModel from "../model/user.model.js";
+import { userResolver } from "./user/userResolver.graphql.user.js";
+
 const resolvers = {
-    games: () => games,
-    game: ({ id }) => games.find((game) => game.id === id) || null
+    ...userResolver
 };
 
 export { resolvers };
