@@ -1,6 +1,14 @@
 import { buildSchema } from "graphql";
 
 const userSchema = buildSchema(`
+
+    type Notification {
+      id: ID!
+      type: String!
+      message: String!
+      timestamp: String!
+    }
+      
     type User {
       id: ID!
       username: String!
@@ -16,10 +24,11 @@ const userSchema = buildSchema(`
       posts: [ID]
       savedPosts: [ID]
       isVerified: Boolean
-      notifications: Boolean
+      notifications: [Notification]
       lastLogin: String
       createdAt: String
       updatedAt: String
+      dob: String
     }
   
     input UserInput {
@@ -30,6 +39,7 @@ const userSchema = buildSchema(`
     }
 
     input UserDOB {
+      userId: ID!
       dob: String!
     }
 
@@ -38,10 +48,14 @@ const userSchema = buildSchema(`
       addUserDOB(input: UserDOB) :User
     }
   
+    input UserFilter {
+      username: String
+      email: String
+    }
+
     type Query {
       users: [User]!
-      getUserByUsername(username: String!): User
-      getUserByEmail(email: String!): User
+      getUser(filter: UserFilter!): User
     }
 `);
 
