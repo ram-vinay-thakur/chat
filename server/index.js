@@ -51,7 +51,16 @@ app.use(limiter);
 app.use(compression());
 
 // GraphQL Middleware
-app.use('/graphql', graphqlHTTP({ schema, rootValue: resolvers, graphiql: true }));
+app.use(
+  '/graphql',
+  graphqlHTTP((req, res) => ({
+      schema,
+      rootValue: resolvers,
+      graphiql: true,
+      context: { req, res }, 
+  }))
+);
+
 
 // Default route
 app.get('/', (req, res) => {

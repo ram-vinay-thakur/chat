@@ -43,9 +43,15 @@ const userSchema = buildSchema(`
       dob: String!
     }
 
+    input getOTP {
+      redisKey: String!
+      otp: String!
+    }
+
     type Mutation {
       addUser(input: UserInput): User
       addUserDOB(input: UserDOB) :User
+      validateOtp(input: getOTP) :Boolean
     }
   
     input UserFilter {
