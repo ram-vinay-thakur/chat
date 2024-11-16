@@ -31,6 +31,14 @@ const userSchema = buildSchema(`
       dob: String
     }
   
+    type TempUser  {
+      username: String!
+      email: String!
+      name: String!
+      dob: String!
+      redisKey: String!
+    }
+
     input UserInput {
       username: String!
       email: String!
@@ -49,7 +57,7 @@ const userSchema = buildSchema(`
     }
 
     type Mutation {
-      addUser(input: UserInput): User
+      addUser(input: UserInput): TempUser
       addUserDOB(input: UserDOB) :User
       validateOtp(input: getOTP) :Boolean
     }

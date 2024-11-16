@@ -4,6 +4,7 @@ import ApiResponse from "../../utils/ApiResponse.js";
 import redis from "../../redis/redisClient.js";
 import bcrypt from 'bcryptjs';
 import { generateOTP } from "../../utils/generateOtp.js";
+import sendOtp from "../../utils/sendOtp.js";
 
 const userResolver = {
     users: () => games,
@@ -28,7 +29,13 @@ const userResolver = {
             const expiry = 1800; // 30 minutes
             await redis.set(redisKey, JSON.stringify(newUser), 'EX', expiry);
 
-            return new ApiResponse(200, redisKey);
+            return {
+                username: newUser.username,
+                email: newUser.email,
+                name: newUser.name,
+                dob: null,
+                redisKey: redisKey
+            };
         } catch (error) {
             return new ApiError(500, error.message);
         }
@@ -73,7 +80,7 @@ const userResolver = {
             if (isOlderThan12()) {
                 user.dob = dob;
                 const otp = generateOTP();
-
+                sendOtp(user.email, otp)
                 // Save updated data back to Redis
                 await redis.set(redisKey, JSON.stringify({ ...user, otp }), 'EX', 1800); // Extend expiry
 
