@@ -39,7 +39,7 @@ const userSchema = buildSchema(`
     }
 
     input UserDOB {
-      userId: ID!
+      redisKeyfromClient: String!
       dob: String!
     }
 
