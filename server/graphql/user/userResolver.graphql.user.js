@@ -98,49 +98,58 @@ const userResolver = {
 
     validateOtp: async (args, context) => {
         try {
-            const {input} = args;
+            const { input } = args;
             const { redisKey, otp } = input;
             const { req, res } = context;
 
             // Fetch user data from Redis
             const userData = await redis.get(redisKey);
-    
+
             if (!userData) {
                 return new ApiError(404, 'OTP data not found in Redis.');
             }
-    
+
             const parsedUser = JSON.parse(userData);
-    
+
             // Check if OTP matches
             if (parsedUser.otp === otp) {
                 // Remove OTP after validation
                 delete parsedUser.otp;
-    
+
                 // Create and save user in MongoDB
                 const dbUser = new userModel(parsedUser);
                 await dbUser.save();
-    
+
                 // Find the saved user (findOne is preferred for single user search)
                 const savedUser = await userModel.findOne({ email: parsedUser.email }).select('-password');
-    
+
                 if (!savedUser) {
                     return new ApiError(500, 'User could not be saved or found.');
                 }
-    
+
                 // Set the user session
                 req.session.user = savedUser._id;
-    
+
                 // Return success response
-                return new ApiResponse(200, savedUser, `OTP is valid for user: ${redisKey}`);
+                return {
+                    _id: savedUser._id,
+                    email: savedUser.email,
+                    name: savedUser.name,         
+                    username: savedUser.username,
+                    profilePicture: savedUser.profilePicture, 
+                    isVerified: savedUser.isVerified,
+                    followersCount: savedUser.followersCount,
+                    followingCount: savedUser.followingCount
+                }
             } else {
                 return new ApiResponse(400, null, `Invalid OTP for user: ${redisKey}`);
             }
-    
+
         } catch (error) {
             console.error("Error in validateOtp resolver:", error);
             return new ApiError(500, 'Something went wrong!', error.message);
         }
-    }    
+    }
 };
 
 export { userResolver };

@@ -11,6 +11,7 @@ const userSchema = new Schema({
         index: true,
         unique: true
     },
+
     email: {
         type: String,
         required: true,
@@ -18,104 +19,196 @@ const userSchema = new Schema({
         lowercase: true,
         unique: true
     },
+
     name: {
         type: String,
         trim: true,
     },
+
     password: {
         type: String,
         required: true
     },
+
     bio: {
         type: String,
         maxLength: 150
     },
+
+
     dob: {
         type: Date,
         required: true
     },
+
     website: {
         type: String
     },
+
+    gender: {
+        type: String,
+        enum: ['male', 'female', 'other'],
+    },
+
     profilePicture: {
         type: String
     },
+
     isPrivate: {
         type: Boolean
     },
+
     followersCount: {
         type: Number,
         default: 0
     },
+
     followingCount: {
         type: Number,
         default: 0
     },
+
     followers: [
         {
             type: Schema.Types.ObjectId,
             ref: 'User'
         }
     ],
+
     following: [
         {
             type: Schema.Types.ObjectId,
             ref: 'User'
         }
     ],
+
     posts: [
         {
             type: Schema.Types.ObjectId,
             ref: 'Post'
         }
     ],
+
     savedPosts: [
         {
             type: Schema.Types.ObjectId,
             ref: 'Post'
         }
     ],
+
     isVerified: {
         type: Boolean,
         default: false
     },
+
     notifications: {
         type: Boolean,
         default: true
     },
+
     lastLogin: {
         type: Date
     },
-    // Additional fields
-    googleId: { type: String },
-    facebookId: { type: String },
-    twoFactorEnabled: { type: Boolean, default: false },
-    twoFactorSecret: { type: String },
-    failedLoginAttempts: { type: Number, default: 0 },
-    lockUntil: { type: Date },
+
+    googleId: { 
+        type: String 
+    },
+
+    facebookId: { 
+        type: String 
+    },
+
+    twoFactorEnabled: { 
+        type: Boolean, 
+        default: false 
+    },
+
+    twoFactorSecret: { 
+        type: String 
+    },
+
+    failedLoginAttempts: { 
+        type: Number, 
+        default: 0 
+    },
+
+    lockUntil: { 
+        type: Date 
+    },
+
     role: {
         type: String,
         enum: ['user', 'admin', 'moderator'],
         default: 'user'
     },
-    profileComplete: { type: Boolean, default: false },
-    emailVerified: { type: Boolean, default: false },
-    allowProfileDiscovery: { type: Boolean, default: true },
-    allowPostSharing: { type: Boolean, default: true },
+
+    profileComplete: { 
+        type: Boolean, 
+        default: false 
+    },
+
+    emailVerified: { 
+        type: Boolean, 
+        default: false 
+    },
+
+    allowProfileDiscovery: { 
+        type: Boolean, 
+        default: true 
+    },
+
+    allowPostSharing: { 
+        type: Boolean, 
+        default: true 
+    },
+
     address: {
         type: String
     },
+
     location: {
-        type: { type: String, default: 'Point' },
+        type: { 
+            type: String, 
+            default: 'Point' 
+        },
         coordinates: [Number]
     },
+
     preferences: {
-        language: { type: String, default: 'en' },
-        notificationsEnabled: { type: Boolean, default: true }
+        language: { 
+            type: String, 
+            default: 'en' 
+        },
+        notificationsEnabled: { 
+            type: Boolean, 
+            default: true 
+        },
+        contentFilter: {
+            type: String,
+            enum: ['all', 'explicit', 'family-friendly'],
+            default: 'all'
+        },
+        theme: { 
+            type: String, 
+            enum: ['light', 'dark'], 
+            default: 'light' 
+        }
+
     },
-    deleted: { type: Boolean, default: false },
-    lastPostDate: { type: Date },
-    loginCount: { type: Number, default: 0 },
+
+    deleted: { 
+        type: Boolean, 
+        default: false 
+    },
+
+    lastPostDate: { 
+        type: Date 
+    },
+
+    loginCount: { 
+        type: Number, 
+        default: 0 
+    },
 },
     {
         timestamps: true

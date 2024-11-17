@@ -16,6 +16,7 @@ const userSchema = buildSchema(`
       bio: String
       name: String
       website: String
+      gender: String
       profilePicture: String
       isPrivate: Boolean
       followersCount: Int
@@ -52,6 +53,8 @@ const userSchema = buildSchema(`
     type Preferences {
       language: String
       notificationsEnabled: Boolean
+      contentFilter: String
+      theme: String
     }
   
     type Post {
