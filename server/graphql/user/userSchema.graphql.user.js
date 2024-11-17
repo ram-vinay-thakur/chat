@@ -10,33 +10,62 @@ const userSchema = buildSchema(`
     }
       
     type User {
-      id: ID!
+      _id: ID!
       username: String!
       email: String!
       bio: String
+      name: String
       website: String
       profilePicture: String
       isPrivate: Boolean
       followersCount: Int
       followingCount: Int
-      followers: [ID]
-      following: [ID]
-      posts: [ID]
-      savedPosts: [ID]
+      followers: [User]
+      following: [User]
+      posts: [Post]
+      savedPosts: [Post]
       isVerified: Boolean
       notifications: [Notification]
       lastLogin: String
       createdAt: String
       updatedAt: String
       dob: String
+      twoFactorEnabled: Boolean
+      role: String
+      profileComplete: Boolean
+      emailVerified: Boolean
+      allowProfileDiscovery: Boolean
+      allowPostSharing: Boolean
+      address: String
+      location: Location
+      preferences: Preferences
+      deleted: Boolean
+      lastPostDate: String
+      loginCount: Int
+    }
+
+    type Location {
+      type: String
+      coordinates: [Float]
+    }
+
+    type Preferences {
+      language: String
+      notificationsEnabled: Boolean
     }
   
+    type Post {
+      _id: ID!
+      content: String!
+      createdAt: String!
+    }
+      
     type TempUser  {
       username: String!
       email: String!
       name: String!
-      dob: String!
-      redisKey: String!
+      dob: String
+      redisKey: String
     }
 
     input UserInput {
@@ -58,8 +87,8 @@ const userSchema = buildSchema(`
 
     type Mutation {
       addUser(input: UserInput): TempUser
-      addUserDOB(input: UserDOB) :User
-      validateOtp(input: getOTP) :Boolean
+      addUserDOB(input: UserDOB) :TempUser
+      validateOtp(input: getOTP) :User
     }
   
     input UserFilter {

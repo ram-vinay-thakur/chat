@@ -57,11 +57,8 @@ const userResolver = {
 
             const isOlderThan12 = (dob) => {
                 // Validate and parse the date of birth
-                const birthDate = new Date(dob);
-                if (isNaN(birthDate)) {
-                    throw new Error('Invalid date of birth.');
-                }
-
+                const birthDate = new Date(String(dob));
+                console.log(birthDate)
                 const today = new Date();
                 let age = today.getFullYear() - birthDate.getFullYear();
                 const monthDifference = today.getMonth() - birthDate.getMonth();
@@ -70,21 +67,26 @@ const userResolver = {
                 if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
                     age--;
                 }
-
+                console.log(age)
                 // Return true if the age is greater than 12
                 return age > 12;
             };
 
 
             // Add DOB to the user data
-            if (isOlderThan12()) {
+            if (isOlderThan12(dob)) {
                 user.dob = dob;
                 const otp = generateOTP();
-                sendOtp(user.email, otp)
+                sendOtp(user.email, otp);
                 // Save updated data back to Redis
                 await redis.set(redisKey, JSON.stringify({ ...user, otp }), 'EX', 1800); // Extend expiry
-
-                return new ApiResponse(200, null, `DOB added for user: ${redisKey}`);
+                return {
+                    username: user.username,
+                    email: user.email,
+                    name: user.name,
+                    dob: user.dob,
+                    redisKey: redisKey
+                };
             } else {
                 return new ApiResponse(400, null, `User is not older than 12 years`)
             }
@@ -94,11 +96,12 @@ const userResolver = {
         }
     },
 
-    validateOtp: async ({ otpOBJ }, context) => {
+    validateOtp: async (args, context) => {
         try {
-            const { redisKey, otp } = otpOBJ;
+            const {input} = args;
+            const { redisKey, otp } = input;
             const { req, res } = context;
-    
+
             // Fetch user data from Redis
             const userData = await redis.get(redisKey);
     
@@ -134,6 +137,7 @@ const userResolver = {
             }
     
         } catch (error) {
+            console.error("Error in validateOtp resolver:", error);
             return new ApiError(500, 'Something went wrong!', error.message);
         }
     }    

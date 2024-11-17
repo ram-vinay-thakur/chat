@@ -2,7 +2,7 @@ import { Schema, model } from "mongoose";
 import bcrypt from 'bcryptjs';
 import jwt from "jsonwebtoken";
 
-const userSchema = Schema({
+const userSchema = new Schema({
     username: {
         type: String,
         required: true,
@@ -18,6 +18,10 @@ const userSchema = Schema({
         lowercase: true,
         unique: true
     },
+    name: {
+        type: String,
+        trim: true,
+    },
     password: {
         type: String,
         required: true
@@ -25,6 +29,10 @@ const userSchema = Schema({
     bio: {
         type: String,
         maxLength: 150
+    },
+    dob: {
+        type: Date,
+        required: true
     },
     website: {
         type: String
@@ -37,9 +45,11 @@ const userSchema = Schema({
     },
     followersCount: {
         type: Number,
+        default: 0
     },
     followingCount: {
-        type: Number
+        type: Number,
+        default: 0
     },
     followers: [
         {
@@ -75,7 +85,37 @@ const userSchema = Schema({
     },
     lastLogin: {
         type: Date
-    }
+    },
+    // Additional fields
+    googleId: { type: String },
+    facebookId: { type: String },
+    twoFactorEnabled: { type: Boolean, default: false },
+    twoFactorSecret: { type: String },
+    failedLoginAttempts: { type: Number, default: 0 },
+    lockUntil: { type: Date },
+    role: {
+        type: String,
+        enum: ['user', 'admin', 'moderator'],
+        default: 'user'
+    },
+    profileComplete: { type: Boolean, default: false },
+    emailVerified: { type: Boolean, default: false },
+    allowProfileDiscovery: { type: Boolean, default: true },
+    allowPostSharing: { type: Boolean, default: true },
+    address: {
+        type: String
+    },
+    location: {
+        type: { type: String, default: 'Point' },
+        coordinates: [Number]
+    },
+    preferences: {
+        language: { type: String, default: 'en' },
+        notificationsEnabled: { type: Boolean, default: true }
+    },
+    deleted: { type: Boolean, default: false },
+    lastPostDate: { type: Date },
+    loginCount: { type: Number, default: 0 },
 },
     {
         timestamps: true
