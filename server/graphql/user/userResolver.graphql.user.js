@@ -28,7 +28,7 @@ const userResolver = {
             const redisKey = `newUser:${newUser.email}`;
             const expiry = 1800; // 30 minutes
             await redis.set(redisKey, JSON.stringify(newUser), 'EX', expiry);
-
+            console.log('successfully done that')
             return {
                 username: newUser.username,
                 email: newUser.email,
