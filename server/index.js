@@ -4,7 +4,7 @@ import { schema } from './graphql/schema.graphql.js';
 import { resolvers } from './graphql/resolvers.graphql.js';
 import cors from 'cors';
 import { config } from 'dotenv';
-config(); // Loads environment variables as early as possible
+config(); 
 import connection from './db/connection.db.js';
 import redis from './redis/redisClient.js';
 import compression from 'compression';
@@ -13,10 +13,9 @@ import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import { validatecsrfToken, csrfProtection } from './middlewares/csrufToken.middleware.js'
 
-
-
 const app = express();
 const PORT = 3000;
+
 // DB connection
 connection(process.env.DB_URL);
 
@@ -30,8 +29,8 @@ app.use(session({
 
 // Rate limits to prevent too many requests
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
+  windowMs: 15 * 60 * 1000,
+  max: 100, 
   message: 'Too many requests from this IP, please try again later.'
 });
 

@@ -34,7 +34,8 @@ const userResolver = {
                 email: newUser.email,
                 name: newUser.name,
                 dob: null,
-                redisKey: redisKey
+                redisKey: redisKey,
+                success: true
             };
         } catch (error) {
             return new ApiError(500, error.message);

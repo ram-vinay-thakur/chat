@@ -69,6 +69,7 @@ const userSchema = buildSchema(`
       name: String!
       dob: String
       redisKey: String
+      success: Boolean
     }
 
     input UserInput {

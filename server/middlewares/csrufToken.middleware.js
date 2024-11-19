@@ -15,7 +15,6 @@ const validatecsrfToken = (req, res, next) => {
     csrfProtection(req, res, (err) => {
         if (err) {
             if (err.code === 'EBADCSRFTOKEN') {
-                // Invalid CSRF token, respond with 403
                 return res.status(403).send(new ApiError(403, 'Invalid CSRF token.'));
             }
             return next(err);

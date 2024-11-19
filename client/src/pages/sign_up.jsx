@@ -59,6 +59,7 @@ function SignUp() {
                 email
                 username
                 redisKey
+                success
               }
             }
           `,
@@ -67,13 +68,14 @@ function SignUp() {
         credentials: "include", 
       });
       const data = await response.json();
-      console.log(data)
+
       if (data.errors) {
         setError(data.errors[0].message || "An error occurred.");
-      } else if (data.data.signUp.success) {
-        setSuccess(data.data.signUp.message || "Sign up successful!");
+      } else if (data.data.addUser.success) {
+        setSuccess("Sign up successful!");
       }
     } catch (err) {
+      console.log(err)
       setError("Error submitting the form.");
     }
   };
