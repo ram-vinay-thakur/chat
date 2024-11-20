@@ -4,48 +4,62 @@ import { schema } from './graphql/schema.graphql.js';
 import { resolvers } from './graphql/resolvers.graphql.js';
 import cors from 'cors';
 import { config } from 'dotenv';
-config(); 
+import http from 'http';
+import { Server } from 'socket.io'; // Import Socket.IO
 import connection from './db/connection.db.js';
-import redis from './redis/redisClient.js';
 import compression from 'compression';
 import rateLimit from 'express-rate-limit';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
-import { validatecsrfToken, csrfProtection } from './middlewares/csrufToken.middleware.js'
+import { validatecsrfToken, csrfProtection } from './middlewares/csrufToken.middleware.js';
+import { corsOptions } from './config/cors.config.js';
+import { handleSocketEvents } from './socket/socketHandler.js';
+
+config();
 
 const app = express();
 const PORT = 3000;
+
+// Create HTTP server and integrate it with Socket.IO
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: ['http://localhost:5173', 'http://127.0.0.1:3001'], // Allowed origins
+    methods: ['GET', 'POST'],
+    credentials: true,
+  },
+});
+handleSocketEvents(io);
 
 // DB connection
 connection(process.env.DB_URL);
 
 // Session middleware
-app.use(session({
-  secret: 'your-secret-key',
-  resave: false,
-  saveUninitialized: true,
-  cookie: { secure: process.env.NODE_ENV === 'production' },
-}));
+app.use(
+  session({
+    secret: 'your-secret-key',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: process.env.NODE_ENV === 'production' },
+  })
+);
 
 // Rate limits to prevent too many requests
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100, 
-  message: 'Too many requests from this IP, please try again later.'
+  max: 100,
+  message: 'Too many requests from this IP, please try again later.',
 });
 
 // Cookie parser middleware
 app.use(cookieParser());
 
-const allowedOrigins = ['http://localhost:5173', 'http://127.0.0.1:3001']
 // CORS configuration
-app.use(cors({
-  origin: 'http://localhost:5173',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'CSRF-Token'],
-  credentials: true,
-}));
+app.use(
+  cors(corsOptions)
+);
 
+// CSRF protection
 app.use(csrfProtection);
 
 // Rate limiting
@@ -68,29 +82,7 @@ app.use(
 );
 
 
-// Default route
-app.get('/', (req, res) => {
-  res.send('Hello, world!');
-});
-
-app.get('/api/data', (req, res) => {
-  res.cookie('myCookie', 'cookieValue', { httpOnly: true, secure: false }); // cookie settings
-  res.json({ message: 'Cookie sent!' });
-});
-
-app.get('/form', csrfProtection, (req, res) => {
-  // Send CSRF token to the frontend
-  res.send({
-    csrfToken: req.csrfToken(),
-  });
-});
-
-
-// Redis client setup
-redis.on('connect', () => console.log('Connected to Redis!'));
-redis.on('error', (err) => console.error('Redis error:', err));
-
 // App running
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
 });
